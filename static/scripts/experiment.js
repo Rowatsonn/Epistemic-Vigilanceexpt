@@ -1,9 +1,9 @@
 var Player
 var Questions = 1
-var numQuestions = 15
+var numQuestions = 2
 var transmitted_blueDots = 0
 var transmitted_yellowDots = 0
-var socialInfoTypes = [1,1,1,1,1,0,0,0,0,0] // There needs to be 5 1s and 5 0s in this array. If the array is empty, it lets participants choose 
+var socialInfoTypes = [] // There needs to be 5 1s and 5 0s in this array. If the array is empty, it lets participants choose 
 var time = 0 // How long have participants spent
 
 function tickClock(){
@@ -259,6 +259,21 @@ function displaySpy(){
         "Question" : Questions,
         "Type" : "Spied",
         "Content" : A_answer
+    }
+    dallinger.createInfo(node_id,{
+        contents: JSON.stringify(resps),
+        info_type: 'Social_info'
+    })    
+}
+
+function displayNothing(){
+    $("#button_div").hide();
+    $("#extra_info").hide();
+    $("#Social_info").html("");
+    resps = {
+        "Question" : Questions,
+        "Type" : "Nothing",
+        "Content" : "NA"
     }
     dallinger.createInfo(node_id,{
         contents: JSON.stringify(resps),
