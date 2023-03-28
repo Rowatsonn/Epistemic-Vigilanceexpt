@@ -1,6 +1,6 @@
 var Player
 var Questions = 1
-var numQuestions = 1
+var numQuestions = 2
 var transmitted_blueDots = 0
 var transmitted_yellowDots = 0
 var socialInfoTypes = [] // There needs to be 5 1s and 5 0s in this array. If the array is empty, it lets participants choose 
