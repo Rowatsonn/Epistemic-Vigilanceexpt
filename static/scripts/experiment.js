@@ -1,6 +1,6 @@
 var Player
 var Questions = 1
-var numQuestions = 2
+var numQuestions = 1
 var transmitted_blueDots = 0
 var transmitted_yellowDots = 0
 var socialInfoTypes = [] // There needs to be 5 1s and 5 0s in this array. If the array is empty, it lets participants choose 
@@ -208,6 +208,7 @@ function adviceDiv(answer){
 }
  
 function socialDiv(answer){
+    $("#Slider").hide(); 
     // Show the information for player B
     resps = {
         "Question" : Questions,
@@ -220,7 +221,7 @@ function socialDiv(answer){
             "time_spent" : time
         })
     })
-    resetTimer();     
+    resetTimer();    
     $("#Info_div").show();
     $("#Submit_revision").show();      
     $("#Small_header").html("You may now amend your guess if you wish.");
@@ -237,6 +238,7 @@ function socialDiv(answer){
 } 
 
 function displayAdvice(){
+    $("#Slider").show(); 
     $("#button_div").hide();    
     $("#extra_info").hide();
     $("#Social_info").html("<strong>The advice</strong> player A left for this question was: " + A_advice);
@@ -252,6 +254,7 @@ function displayAdvice(){
 }
 
 function displaySpy(){
+    $("#Slider").show();
     $("#button_div").hide();
     $("#extra_info").hide();
     $("#Social_info").html("<strong>You spied</strong> on player A and the answer they selected for this question was: " + A_answer);
@@ -267,6 +270,7 @@ function displaySpy(){
 }
 
 function displayNothing(){
+    $("#Slider").show();
     $("#button_div").hide();
     $("#extra_info").hide();
     $("#Social_info").html("");
