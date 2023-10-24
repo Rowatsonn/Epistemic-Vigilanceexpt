@@ -14,7 +14,7 @@ logger = logging.getLogger(__file__)
 
 conditions = ["Cooperative", "Fully_comp", "Hybrid"]
 
-N = 1 # How many networks and participants do you want?
+N = 5 # How many networks and participants do you want? This also controls how many more participants are recruited by recruit()
 
 class Epivigi(Experiment):
     """Define the structure of the experiment."""
@@ -141,11 +141,13 @@ class Epivigi(Experiment):
         if self.networks(full=True):
             self.recruiter.close_recruitment()
         summary = self.log_summary()
+        working_number = 0
         for item in summary:
-            if 'working' not in item:
-                working_number = 0       
+            if 'working' in item:
+                working_number = working_number + 1
+                self.log(working_number)       
 
-        if sum([len(n.nodes()) for n in self.networks()]) == N and working_number == 0: # Are there N nodes across the networks but no participants still working?
+        if all([len(n.nodes()) == 1 for n in self.networks()]) and working_number == 0: # Is there exactly 1 node per network (1 player A) and no participants working?
             self.recruiter.recruit(n=N) # Recruit another block of N participants
 
     def data_check(self, participant):

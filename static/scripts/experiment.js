@@ -1,6 +1,6 @@
 var Player
-var Questions = 1
-var numQuestions = 20
+var Questions = 1 // Leave this as 1, this is a counter for the number of questions the participant has done. 
+var numQuestions = 20 // How many questions in total?
 var transmitted_blueDots = 0
 var transmitted_yellowDots = 0
 var socialInfoTypes = [1,1,1,1,1,0,0,0,0,0] // There needs to be 5 1s and 5 0s in this array. If the array is empty, it lets participants choose 
