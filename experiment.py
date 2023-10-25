@@ -14,7 +14,7 @@ logger = logging.getLogger(__file__)
 
 conditions = ["Cooperative", "Fully_comp", "Hybrid"]
 
-N = 5 # How many networks and participants do you want? This also controls how many more participants are recruited by recruit()
+N = 2 # How many networks and participants do you want? This also controls how many more participants are recruited by recruit()
 
 class Epivigi(Experiment):
     """Define the structure of the experiment."""
@@ -71,6 +71,7 @@ class Epivigi(Experiment):
         else:
             node = self.models.Drone(network=network, participant=participant) # Drone = Player A
         node.condition = node.network.condition
+        node.bonus = "TBC" # Set this to mark that they haven't had their bonus calculated yet
         return node
 
     def add_node_to_network(self, node, network):
@@ -85,8 +86,9 @@ class Epivigi(Experiment):
         """This function runs when a participant completes the experiment. Here, we manually award the bonuses to player A if the player is B and let the function resolve
         as normal for player B."""
         my_node = participant.nodes()[0]
+
         #self.log(my_node)   
-        if my_node.type == "Probe_node":
+        if my_node.type == "Probe_node" and my_node.bonus == "TBC":
             their_node = my_node.neighbors(direction = "from")[0]
             #self.log(their_node)  
             their_participant = their_node.participant
