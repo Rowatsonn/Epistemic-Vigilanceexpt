@@ -14,7 +14,7 @@ logger = logging.getLogger(__file__)
 
 conditions = ["Cooperative", "Fully_comp", "Hybrid"]
 
-N = 2 # How many networks and participants do you want? This also controls how many more participants are recruited by recruit()
+N = 1 # How many networks and participants do you want? This also controls how many more participants are recruited by recruit()
 
 class Epivigi(Experiment):
     """Define the structure of the experiment."""
@@ -32,6 +32,7 @@ class Epivigi(Experiment):
         self.models = models
         self.experiment_repeats = N # How many networks?
         self.initial_recruitment_size = N
+        self.inactivity_time_limit = 2700 # How long (seconds) of no response before a node is failed and the participant replaced. QUESTION - Prolific gives people 56 minutes before timing them out (based on our estimated completion time). I have set to 45 minutes, which seems reasonable? 
         self.known_classes = {
             "Drone" : models.Drone,
             "Probe" : models.Probe,
@@ -73,6 +74,17 @@ class Epivigi(Experiment):
         node.condition = node.network.condition
         node.bonus = "TBC" # Set this to mark that they haven't had their bonus calculated yet
         return node
+
+    def info_post_request(self,node,info):
+        """Varies based on info type"""
+
+        node.update_last_request_time()
+        if info.type == "Finished":
+            # Signal that the node has finished data collection. So don't fail it.
+            node.finished = "Yes"
+            if node.type == "Probe_node":
+                # Signal that the network is finished. For the benefit of experiment_ongoing
+                node.network.finished = "Yes"    
 
     def add_node_to_network(self, node, network):
         """Add node to the chain and receive transmissions."""
@@ -167,3 +179,33 @@ class Epivigi(Experiment):
             return False
         else:
             return True
+            
+    @property
+    def background_tasks(self):
+        return [
+           self.stiller_remover,
+        ] 
+
+    def Experiment_ongoing(self):
+        """Is the experiment still going. Once participants reach the questionnaire, this will stop"""
+        return any([n.finished != "Yes" for n in self.networks()])
+
+    def stiller_remover(self):
+        """Remove any stillers"""
+        while self.Experiment_ongoing():
+            gevent.sleep(2)
+            for net in self.started_but_unfinished_networks():
+                self.node_kicker()
+
+    def node_kicker(self):
+        for net in self.started_but_unfinished_networks():
+            for n in net.nodes():
+                current_time = datetime.now()
+                if (current_time - n.last_request).total_seconds() > self.inactivity_time_limit and n.finished != "Yes":
+                    self.log("Node booted")
+                    n.fail()
+                    net.calculate_full()
+                    self.save()
+
+    def started_but_unfinished_networks(self):
+        return [n for n in self.networks() if n.finished != "Yes"]
