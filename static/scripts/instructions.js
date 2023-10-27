@@ -19,7 +19,14 @@ function createAgent() {
         dallinger.storage.set("condition", condition);
         dallinger.storage.set("attempts", 0); // This cookie records how many tries they take to pass the comprehension check. Necessary if they get sent back to the instruction page. 
     })
-    .fail(function (rejection) { go_to_questionnaire(); });
+    .fail(function (rejection) {extraParticipant(); });
+}
+
+function extraParticipant(){
+    // If a participant returns the submission after starting (they already created a Node), then the Node creation step will fail. 
+    // To avoid continuously recruiting replacements, we need the participant to submit rather than return, so we send them to a page explaining this. 
+    dallinger.goToPage('instructions/woops');
+
 }
 
 function backButton(){
