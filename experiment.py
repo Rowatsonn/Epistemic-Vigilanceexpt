@@ -187,19 +187,19 @@ class Epivigi(Experiment):
            self.stiller_remover,
         ] 
 
-    def Experiment_ongoing(self):
+    def experiment_ongoing(self):
         """Is the experiment still going. Once participants reach the questionnaire, this will stop"""
         return any([n.finished != "Yes" for n in self.networks()])
 
     def stiller_remover(self):
         """Remove any stillers"""
-        while self.Experiment_ongoing():
+        while self.experiment_ongoing():
             gevent.sleep(2)
-            for net in self.started_but_unfinished_networks():
+            for net in self.unfinished_networks():
                 self.node_kicker()
 
     def node_kicker(self):
-        for net in self.started_but_unfinished_networks():
+        for net in self.unfinished_networks():
             for n in net.nodes():
                 current_time = datetime.now()
                 if (current_time - n.last_request).total_seconds() > self.inactivity_time_limit and n.finished != "Yes":
@@ -208,5 +208,5 @@ class Epivigi(Experiment):
                     net.calculate_full()
                     self.save()
 
-    def started_but_unfinished_networks(self):
+    def unfinished_networks(self):
         return [n for n in self.networks() if n.finished != "Yes"]
