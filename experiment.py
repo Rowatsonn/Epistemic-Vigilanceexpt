@@ -32,7 +32,7 @@ class Epivigi(Experiment):
         self.models = models
         self.experiment_repeats = N # How many networks?
         self.initial_recruitment_size = N
-        self.inactivity_time_limit = 2700 # How long (seconds) of no response before a node is failed and the participant replaced. QUESTION - Prolific gives people 56 minutes before timing them out (based on our estimated completion time). I have set to 45 minutes, which seems reasonable? 
+        self.inactivity_time_limit = 2700 # How long (seconds) of no response before a node is failed and the participant replaced.
         self.known_classes = {
             "Drone" : models.Drone,
             "Probe" : models.Probe,
@@ -73,7 +73,7 @@ class Epivigi(Experiment):
         else:
             node = self.models.Drone(network=network, participant=participant) # Drone = Player A
         node.condition = node.network.condition
-        node.bonus = "TBC" # Set this to mark that they haven't had their bonus calculated yet
+        node.bonus = "TBC" # Set this to mark that they haven't had their bonus calculated yet. Workaround for the occassional double bonus bug. 
         return node
 
     def info_post_request(self,node,info):
@@ -152,6 +152,7 @@ class Epivigi(Experiment):
     def recruit(self):
         """Recruit runs automatically when a participant finishes.
         Check if we have N nodes and no working participants. If so, recruit another block of participants (they will be Player Bs)"""
+        """Note, will not run unless auto_recruit is set to true."""
 
         if self.networks(full=True):
             self.recruiter.close_recruitment()
@@ -177,7 +178,7 @@ class Epivigi(Experiment):
         """
         self.log(len(participant.infos(type = self.models.Answer_Info)))
         if len(participant.infos(type = self.models.Answer_Info)) != 20: # We expect the participant to have 20 answer infos (record of correct/incorrect) if all has worked
-            return False
+            return False # If a participant fails the data check, their node is failed and auto_recruit will replace them automatically. 
         else:
             return True
 
